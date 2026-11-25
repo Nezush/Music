@@ -15,11 +15,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Fix gradle wrapper
+        run: |
+          curl -o gradle/wrapper/gradle-wrapper.jar \
+            https://github.com/gradle/gradle/raw/v8.7.0/gradle/wrapper/gradle-wrapper.jar
+          curl -o gradlew \
+            https://raw.githubusercontent.com/gradle/gradle/v8.7.0/gradlew
+          chmod +x gradlew
 
       - name: Build AAB
         run: ./gradlew bundleRelease
