@@ -1,20 +1,18 @@
 #!/usr/bin/env sh
+
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
-MAX_FD="maximum"
-warn () { echo "$*"; }
-die () { echo; echo "$*"; echo; exit 1; }
-OS=`uname`
-case $OS in CYGWIN*) cygwin=true;; Darwin*) darwin=true;; MSYS*|MINGW*) msys=true;; esac
+DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
+
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 if [ -n "$JAVA_HOME" ] ; then
     JAVACMD="$JAVA_HOME/bin/java"
 else
     JAVACMD="java"
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set"
 fi
 
-exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \
+exec "$JAVACMD" $DEFAULT_JVM_OPTS \
     -classpath "$CLASSPATH" \
     org.gradle.wrapper.GradleWrapperMain "$@"
