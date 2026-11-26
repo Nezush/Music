@@ -33,17 +33,24 @@ jobs:
 
       # --- НОВЫЕ ШАГИ ДЛЯ ПОДПИСИ ---
       - name: Decode Keystore
-        run: |
-          mkdir -p app
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release-key.jks
+  run: |
+    # Важно: используем base64 -d -w 0, чтобы избежать переносов строк
+    echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d -w 0 > app/release-key.jks
 
-      - name: Build APK with Signing
-        run: |
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=$(pwd)/app/release-key.jks \
-            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
-            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
-            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+- name: Build APK with Signing
+  env:
+    KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+    KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+    KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+  run: |
+    ./gradlew assembleRelease \
+      -Pandroid.injected.signing.store.file=$(pwd)/app/release-key.jks \
+      -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+      -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+      -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+      - name: Check Keystore Size
+  run: ls -l app/release-key.jks
       # -------------------------------
 
       - name: Upload APK
